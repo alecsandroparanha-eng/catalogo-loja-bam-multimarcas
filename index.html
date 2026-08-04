@@ -79,7 +79,7 @@
         </div>
     </div>
 
-    <!-- Modal de Pagamento via Pix na Tela -->
+    <!-- Modal de Pagamento via Pix na Tela (não usado mais, mantido caso queira reaproveitar depois) -->
     <div id="modal-pix" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:999; justify-content:center; align-items:center;">
         <div style="background:#fff; padding:24px; border-radius:12px; max-width:380px; width:90%; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,0.2); position:relative;">
             <h2 style="margin-top:0; color:#333; font-size:20px;">Pagamento via Pix</h2>
@@ -103,7 +103,6 @@
     </div>
 
     <script>
-        const PUBLIC_KEY_MERCADO_PAGO = 'APP_USR-460bca8b-1b62-4ebf-967d-e96751a30d3e';
         const numeroWhatsApp = "5527997367867"; 
         const urlPlanilha = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQB3xpKv0dLdsU2QILj7Hjh4egbxidl4rxvH6U_l7QUFuPY1dImQj8_JpgFs0c5C8qe1wzc4swXR5EP/pub?output=csv";
 
@@ -220,31 +219,27 @@
             if (cartTotal) cartTotal.innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
         }
 
-        // Função corrigida: agora chama a API /api/pix de verdade
+        // Função atualizada: cria uma preferência de pagamento e redireciona pro Checkout Pro
         async function pagarComPixDireto() {
             if (sacola.length === 0) {
                 alert("Sua sacola está vazia!");
                 return;
             }
 
-            const total = sacola.reduce((sum, item) => sum + item.preco, 0);
-
             try {
-                const response = await fetch('/api/pix', {
+                const response = await fetch('/api/criar-pagamento', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ total, itens: sacola })
+                    body: JSON.stringify({ itens: sacola })
                 });
 
                 const data = await response.json();
 
-                if (response.ok && data.qrCode) {
-                    document.getElementById('pix-qr-image').src = `data:image/png;base64,${data.qrCodeBase64}`;
-                    document.getElementById('pix-code-text').value = data.qrCode;
-                    document.getElementById('modal-pix').style.display = 'flex';
+                if (response.ok && data.linkPagamento) {
+                    window.location.href = data.linkPagamento;
                 } else {
-                    console.error("Erro ao gerar Pix:", data);
-                    alert('Não foi possível gerar o Pix agora. Você pode finalizar pelo WhatsApp.');
+                    console.error("Erro ao criar pagamento:", data);
+                    alert('Não foi possível iniciar o pagamento agora. Você pode finalizar pelo WhatsApp.');
                 }
             } catch (err) {
                 console.error("Erro de conexão:", err);
