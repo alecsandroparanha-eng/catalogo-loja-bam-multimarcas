@@ -46,9 +46,9 @@ export default async function handler(req, res) {
 
         const data = await response.json();
 
-        if (response.ok && (data.init_point || data.sandbox_init_point)) {
-            const linkPagamento = data.sandbox_init_point || data.init_point;
-            return res.status(200).json({ linkPagamento });
+        // Corrigido: agora usa sempre o link de produção (init_point)
+        if (response.ok && data.init_point) {
+            return res.status(200).json({ linkPagamento: data.init_point });
         } else {
             console.error('Erro ao criar preferência:', data);
             return res.status(400).json({ error: data.message || 'Erro ao criar pagamento', detalhes: data });
