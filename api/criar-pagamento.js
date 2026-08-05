@@ -3,12 +3,9 @@ export default async function handler(req, res) {
         return res.status(405).json({ error: 'Método não permitido' });
     }
 
-    const accessToken = process.env.MERCADOPAGO_ACCESS_TOKEN;
+    const accessToken = process.env.MP_TOKEN;
 console.log('TOKEN USADO:', accessToken ? accessToken.substring(0, 25) : 'NÃO ENCONTRADO');
-    if (!accessToken)// DEBUG TEMPORÁRIO - remover depois
-return res.status(200).json({
-    debug: true,
-    tokenInicio: accessToken ? accessToken.substring(0, 25) : 'NÃO ENCONTRADO'
+    if (!accessToken)
 }); {
         return res.status(500).json({ error: 'Token do Mercado Pago não configurado no servidor' });
     }
