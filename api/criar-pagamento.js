@@ -5,6 +5,12 @@ export default async function handler(req, res) {
 
     const accessToken = process.env.MP_TOKEN;
 
+    // DEBUG TEMPORÁRIO - vamos remover depois de confirmar o token
+    return res.status(200).json({
+        debug: true,
+        tokenInicio: accessToken ? accessToken.substring(0, 25) : 'NÃO ENCONTRADO'
+    });
+
     if (!accessToken) {
         return res.status(500).json({ error: 'Token do Mercado Pago não configurado no servidor' });
     }
@@ -47,7 +53,6 @@ export default async function handler(req, res) {
         const data = await response.json();
 
         if (response.ok && (data.init_point || data.sandbox_init_point)) {
-            // Se for token de teste, o Mercado Pago retorna sandbox_init_point
             const linkPagamento = data.sandbox_init_point || data.init_point;
             return res.status(200).json({ linkPagamento });
         } else {
