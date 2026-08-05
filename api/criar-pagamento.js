@@ -4,9 +4,8 @@ export default async function handler(req, res) {
     }
 
     const accessToken = process.env.MP_TOKEN;
-console.log('TOKEN USADO:', accessToken ? accessToken.substring(0, 25) : 'NÃO ENCONTRADO');
-    if (!accessToken)
-}); {
+
+    if (!accessToken) {
         return res.status(500).json({ error: 'Token do Mercado Pago não configurado no servidor' });
     }
 
